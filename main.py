@@ -22,8 +22,9 @@ if __name__ == "__main__":
       engine = Engine(datum)
       for follower in followers:
           followers.set_description("[igfollowers][{}] Saving user data...".format(datum["userName"]))
-          engine.save(follower)        
-      #end for
-      time.sleep(random.randint(10000,50000)/1000)
+          engine.save(follower)
+      random_number = random.randint(10000,50000)/1000
+      print("[igfollowers] Sleeping for {}s".format(random_number))
+      time.sleep(random_number)
 
     instagram.quit()

@@ -4,12 +4,14 @@ import random
 import selenium
 
 class User(object):
-	def __init__(self,session=None):
+	def __init__(self,username=None, session=None):
 		assert session       is not None, "session is not defined."
 		assert type(session) is list    , "session should be list."
+		assert username      is not None, "username is not defined."
 
 		self.driver     = session[0]
-		self.wait       = session[1]		
+		self.wait       = session[1]
+		self.username   = username		
 
 	@property
 	def followers(self):
@@ -21,7 +23,7 @@ class User(object):
 		btn_show_followers.click()
 
 		self.wait.until(lambda driver:driver.find_element_by_xpath('/html/body/div[2]/div/div[2]/div/div[2]/ul/li[2]'))	
-		print("[igfollowers] Scrolling...")
+		print("[igfollowers][{}] Scrolling...".format(self.username))
 		
 		dialog      = self.driver.find_elements_by_class_name('_4gt3b')[0]		
 		prev_height = -1
@@ -46,7 +48,7 @@ class User(object):
 		users     = tqdm(users)
 		documents = list()
 		for user in users:
-			users.set_description("[igfollowers] Fetching user data...")
+			users.set_description("[igfollowers][{}] Fetching user data...".format(self.username))
 			username     = user.find_element_by_class_name("_4zhc5")
 			username     = username.text
 			user_link    = user.find_element_by_class_name("_4zhc5")

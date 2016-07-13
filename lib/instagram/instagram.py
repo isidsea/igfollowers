@@ -51,8 +51,9 @@ class Instagram(object):
 
 	def goto_user(self,username=None):
 		assert username is not None, "username is not defined."
+		assert username            , "username cannot be empty."
 		
 		url = "https://www.instagram.com/{}/".format(username)
 		self.driver.get(url)
 
-		return User(session=[self.driver, self.wait])
+		return User(username=username, session=[self.driver, self.wait])
