@@ -15,16 +15,22 @@ if __name__ == "__main__":
     data = tqdm(data.user_list)
     data.set_description("Crawling users...")
     for datum in data:
-      user      = instagram.goto_user(datum["userName"])
-      followers = user.followers
-      followers = tqdm(followers)
+      engine            = Engine(datum)
+      old_user          = engine.get_user(datum["userName"])
+      old_followers     = old_user.followers
+      current_user      = instagram.goto_user(datum["userName"])
+      current_followers = current_user.followers
+      new_followers     = [user for user in current_followers if user not in old_followers]
+      new_followers     = tqdm(new_followers)
+      unfollow_users    = [user for user in old_followers if user not in current_followers]
+      unfollow_users    = tqdm(unfollow_users)
 
-      engine = Engine(datum)
-      for follower in followers:
-          followers.set_description("[igfollowers][{}] Saving user data...".format(datum["userName"]))
-          engine.save(follower)
-      random_number = random.randint(10000,50000)/1000
-      print("[igfollowers] Sleeping for {}s".format(random_number))
-      time.sleep(random_number)
+      for follower in new_followers:
+        new_followers.set_description("[igfollowers][{}] Saving user data...".format(datum["userName"]))
+        engine.save(follower)
+
+      for follower in unfollow_users:
+        unfollow_users.set_description("[igfollowers][{}] Delete user data...".format(datum["userName"]))
+        engine.delete(follower)
 
     instagram.quit()

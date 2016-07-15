@@ -56,4 +56,6 @@ class Instagram(object):
 		url = "https://www.instagram.com/{}/".format(username)
 		self.driver.get(url)
 
-		return User(username=username, session=[self.driver, self.wait])
+		user       = User(username=username, session=[self.driver, self.wait])
+		user.crawl = True
+		return user

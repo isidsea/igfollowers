@@ -1,5 +1,6 @@
-from pymongo import MongoClient
-from .       import tools
+from pymongo         import MongoClient
+from .instagram.user import User
+from .               import tools
 import arrow
 
 class Engine(object):
@@ -31,6 +32,31 @@ class Engine(object):
 			     field = "followers.username"
 		)
 
+	def delete(self, follower=None):
+		try:
+			assert self.db        is not None, "db is not defined."
+			assert follower       is not None, "follower is not defined."
+			assert type(follower) is dict    , "follower should be an dict."
+
+			log = 	{
+						       "type" : "unfollow",
+						   "username" : follower["username"],
+						"insert_date" : arrow.utcnow().datetime
+					}
+
+
+			self.db.data.update_one(
+				{"username":self.account_detail["username"]},
+				{
+					"$pull":{"followers":follower},
+					"$push":{"logs":log}
+				}
+			)
+		except AssertionError:
+			print("[igfollowers] Assertion is not satisfied.")
+		#end try
+
+
 	def save(self, follower=None):
 		try:
 			assert self.db        is not None, "db is not defined."
@@ -54,3 +80,14 @@ class Engine(object):
 		except AssertionError:
 			print("[igfollowers] Assertion is not satisfied.")
 		#end try
+
+	def get_user(self, username=None):
+		assert username is not None, "username is not defined."
+		assert self.db  is not None, "db is not defined."
+
+		result         = [document for document in self.db.data.find({"username":username})]
+		result         = result[0] # TODO: check if result is less than 0
+		user           = User(username=username)
+		user.crawl     = False
+		user.followers = result["followers"]
+		return user

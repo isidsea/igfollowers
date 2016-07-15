@@ -2,34 +2,44 @@ from tqdm import tqdm
 import time
 import random
 import selenium
+import copy
 
 class User(object):
 	def __init__(self,username=None, session=None):
-		assert session       is not None, "session is not defined."
-		assert type(session) is list    , "session should be list."
 		assert username      is not None, "username is not defined."
 
-		self.driver     = session[0]
-		self.wait       = session[1]
-		self.username   = username		
+		self.session    = session
+		self.username   = username
+		self.crawl      = True
+		self._followers = []
 
 	@property
 	def followers(self):
-		assert self.driver is not None, "driver is not defined."
-		assert self.wait   is not None, "wait is not defined."
+		if self.crawl:
+			self._followers = self._crawl_followers()
+		return self._followers
+
+	@followers.setter
+	def followers(self, value):
+		self._followers = copy.deepcopy(value)
+
+	def _crawl_followers(self):
+		assert self.session is not None, "session is not defined."
+		driver = self.session[0]
+		wait   = self.session[1]
 		
-		self.wait.until(lambda driver:driver.find_element_by_xpath('//*[@id="react-root"]/section/main/article/header/div[2]/ul/li[2]/a'))
-		btn_show_followers = self.driver.find_element_by_xpath('//*[@id="react-root"]/section/main/article/header/div[2]/ul/li[2]/a')
+		wait.until(lambda driver:driver.find_element_by_xpath('//*[@id="react-root"]/section/main/article/header/div[2]/ul/li[2]/a'))
+		btn_show_followers = driver.find_element_by_xpath('//*[@id="react-root"]/section/main/article/header/div[2]/ul/li[2]/a')
 		btn_show_followers.click()
 
-		self.wait.until(lambda driver:driver.find_element_by_xpath('/html/body/div[2]/div/div[2]/div/div[2]/ul/li[2]'))	
+		wait.until(lambda driver:driver.find_element_by_xpath('/html/body/div[2]/div/div[2]/div/div[2]/ul/li[2]'))	
 		print("[igfollowers][{}] Scrolling...".format(self.username))
 		
-		dialog      = self.driver.find_elements_by_class_name('_4gt3b')[0]		
+		dialog      = driver.find_elements_by_class_name('_4gt3b')[0]		
 		prev_height = -1
 		max_exceed  = False
 		while not max_exceed:
-			self.driver.execute_script("arguments[0].scrollTop = arguments[0].scrollHeight", dialog)
+			driver.execute_script("arguments[0].scrollTop = arguments[0].scrollHeight", dialog)
 			time.sleep(random.randint(1000,5000)/1000)
 
 			scroll_top    = int(dialog.get_attribute("scrollTop"))
@@ -37,14 +47,14 @@ class User(object):
 			offset_height = int(dialog.get_attribute("offsetHeight"))
 			
 			try:
-				loading_bar = self.driver.find_element_by_class_name("_lm3a0")
+				loading_bar = driver.find_element_by_class_name("_lm3a0")
 			except selenium.common.exceptions.NoSuchElementException:
 				if prev_height == scroll_height:
 					max_exceed = True
 				else:
 					max_exceed  = False
 					prev_height = int(dialog.get_attribute("scrollHeight"))		
-		users     = self.driver.find_elements_by_class_name("_cx1ua")
+		users     = driver.find_elements_by_class_name("_cx1ua")
 		users     = tqdm(users)
 		documents = list()
 		for user in users:
