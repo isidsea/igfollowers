@@ -1,4 +1,5 @@
-
+test.py
+*.log
 # Created by https://www.gitignore.io/api/python
 
 ### Python ###
@@ -19,7 +20,6 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
 lib64/
 parts/
 sdist/
