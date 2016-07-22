@@ -1,5 +1,5 @@
 from lib.instagram.instagram import Instagram
-from lib.engine              import Engine
+from lib.engine.crawler      import Engine
 from lib.data                import Data
 from tqdm                    import tqdm
 import time
