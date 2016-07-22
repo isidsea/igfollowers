@@ -83,15 +83,16 @@ class Engine(object):
 				assert follower       is not None, "follower is not defined."
 				assert type(follower) is dict    , "follower should be an dict."
 
-				# check if any duplicate data on followers
-				old_data = [follower for follower in self.db.data.find({"followers.username":follower["username"]})]
 				log      = {
 								       "type" : "follow",
 								   "username" : follower["username"],
 								"insert_date" : arrow.utcnow().datetime
 						   }
 
-				if len(old_data) == 0:
+				# check if any duplicate data on followers
+				old_data = self.db.data.find_one({"username":self.account_detail["username"]})
+				old_data = old_data["followers"]
+				if follower not in old_data:
 					self.db.data.update_one(
 						{"username":self.account_detail["username"]},
 						{"$push":{"followers":follower, "logs":log}}
