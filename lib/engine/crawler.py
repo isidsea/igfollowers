@@ -29,6 +29,7 @@ class Engine(object):
 		except pymongo.errors.DuplicateKeyError:
 			pass
 
+		print("[igfollowers] Indexing...")
 		tools._force_create_index(
 			        db = self.db,
 			collection = "data",
@@ -87,6 +88,7 @@ class Engine(object):
 		assert username is not None, "username is not defined."
 		assert self.db  is not None, "db is not defined."
 
+		print("[igfollowers] Getting users from database...")
 		result         = [document for document in self.db.data.find({"username":username})]
 		result         = result[0] # TODO: check if result is less than 0
 		user           = User(username=username)

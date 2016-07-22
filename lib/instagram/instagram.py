@@ -53,6 +53,7 @@ class Instagram(object):
 		assert username is not None, "username is not defined."
 		assert username            , "username cannot be empty."
 		
+		print("[igfollowers] Go to {}".format(username))
 		url = "https://www.instagram.com/{}/".format(username)
 		self.driver.get(url)
 

@@ -10,11 +10,11 @@ if __name__ == "__main__":
     instagram.username = "frans.follower"
     instagram.password = "isidsea123"
     instagram.login()
-
+    print("[igfollowers] Logged in")
     data = Data()
-    data = tqdm(data.user_list)
-    data.set_description("Crawling users...")
+    data = data.user_list
     for datum in data:
+      print("[igfollowers] Crawling: {}".format(datum["userName"]))
       engine            = Engine(datum)
       old_user          = engine.get_user(datum["userName"])
       old_followers     = old_user.followers
