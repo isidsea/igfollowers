@@ -74,7 +74,7 @@ class Engine(object):
 					   }
 
 			# check if any duplicate data on followers
-			old_data = db.data.find_one({"username":self.account_detail["username"]})
+			old_data = self.db.data.find_one({"username":self.account_detail["username"]})
 			old_data = old_data["followers"]
 			if follower not in old_data:
 				self.db.data.update_one(
