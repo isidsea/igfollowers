@@ -12,8 +12,8 @@ class Engine(object):
 		assert "userName"    in user    , "userName is not defined."
 		assert "displayName" in user    , "displayName is not defined."
 		
-		self.db = MongoClient("mongodb://mongo:27017")
-		self.db = self.db.ig
+		# Connecting to database
+		self._connect()
 
 		self.account_detail = {
 		       "user_link" : user["url"],
@@ -36,53 +36,74 @@ class Engine(object):
 			     field = "username"
 		)
 
+	def _connect(self):
+		print("[igfollowers] Connecting to database...")
+		self.db = MongoClient("mongodb://mongo:27017")
+		self.db = self.db.ig
+
 	def delete(self, follower=None):
-		try:
-			assert self.db        is not None, "db is not defined."
-			assert follower       is not None, "follower is not defined."
-			assert type(follower) is dict    , "follower should be an dict."
+		success = False
+		while not success:
+			try:
+				assert self.db        is not None, "db is not defined."
+				assert follower       is not None, "follower is not defined."
+				assert type(follower) is dict    , "follower should be an dict."
 
-			log = 	{
-						       "type" : "unfollow",
-						   "username" : follower["username"],
-						"insert_date" : arrow.utcnow().datetime
-					}
-
-
-			self.db.data.update_one(
-				{"username":self.account_detail["username"]},
-				{
-					"$pull":{"followers":follower},
-					"$push":{"logs":log}
-				}
-			)
-		except AssertionError:
-			print("[igfollowers] Assertion is not satisfied.")
-		#end try
-
-	def save(self, follower=None):
-		try:
-			assert self.db        is not None, "db is not defined."
-			assert follower       is not None, "follower is not defined."
-			assert type(follower) is dict    , "follower should be an dict."
-
-			# check if any duplicate data on followers
-			old_data = [follower for follower in self.db.data.find({"followers.username":follower["username"]})]
-			log      = {
-							       "type" : "follow",
+				log = 	{
+							       "type" : "unfollow",
 							   "username" : follower["username"],
 							"insert_date" : arrow.utcnow().datetime
-					   }
+						}
 
-			if len(old_data) == 0:
+
 				self.db.data.update_one(
 					{"username":self.account_detail["username"]},
-					{"$push":{"followers":follower, "logs":log}}
-				)                
-			#end if
-		except AssertionError:
-			print("[igfollowers] Assertion is not satisfied.")
-		#end try
+					{
+						"$pull":{"followers":follower},
+						"$push":{"logs":log}
+					}
+				)
+				success = True
+			except AssertionError:
+				# Force exit looping even if the assertion is not satisfied.
+				print("[igfollowers] Assertion is not satisfied.")
+				success = True
+			except pymongo.errors.AutoReconnect:
+				self._connect()
+			except:
+				raise
+			#end try
+	#end def
+
+	def save(self, follower=None):
+		success = False
+		while not success:
+			try:
+				assert self.db        is not None, "db is not defined."
+				assert follower       is not None, "follower is not defined."
+				assert type(follower) is dict    , "follower should be an dict."
+
+				# check if any duplicate data on followers
+				old_data = [follower for follower in self.db.data.find({"followers.username":follower["username"]})]
+				log      = {
+								       "type" : "follow",
+								   "username" : follower["username"],
+								"insert_date" : arrow.utcnow().datetime
+						   }
+
+				if len(old_data) == 0:
+					self.db.data.update_one(
+						{"username":self.account_detail["username"]},
+						{"$push":{"followers":follower, "logs":log}}
+					)                
+				#end if
+			except AssertionError:
+				print("[igfollowers] Assertion is not satisfied.")
+				success = True
+			except pymongo.errors.AutoReconnect:
+				self._connect()
+			#end try
+	#end def
 
 	def get_user(self, username=None):
 		assert username is not None, "username is not defined."
