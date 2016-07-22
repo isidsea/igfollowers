@@ -2,15 +2,15 @@ import json
 
 class Data(object):
 	SMALL_MOCK_INPUT = {
-		"collectionName": "toyotamotorvifollowers", 
-		   "displayName": "Toyota Vietnam", 
-		     "followers": 70, 
-		     "following": 69, 
-		         "posts": 5, 
-		           "url": "https://www.instagram.com/toyotavietnam/", 
-		        "userId": 1718775482, 
-		      "userName": "toyotavietnam"
-	}
+        "collectionName": "", 
+           "displayName": "", 
+             "followers": 0, 
+             "following": 0, 
+                 "posts": 0, 
+                   "url": "https://www.instagram.com/kiainthephilippines/", 
+                "userId": 0, 
+              "userName": "kiainthephilippines"
+    }
 
 	BIG_MOCK_INPUT = {
 		"collectionName": "toyotamotorphfollowers", 
@@ -25,7 +25,7 @@ class Data(object):
 
 	@property
 	def user_list(self):
-		# return [Data.SMALL_MOCK_INPUT]
+		return [Data.SMALL_MOCK_INPUT]
 		try:
 			data_path = "/root/app/data/Data.json"
 			data      = open(data_path,"r")
