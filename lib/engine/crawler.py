@@ -2,6 +2,7 @@ from pymongo          import MongoClient
 from ..instagram.user import User
 from ..               import tools
 import arrow
+import pymongo
 
 class Engine(object):
 	def __init__(self, user=None):
