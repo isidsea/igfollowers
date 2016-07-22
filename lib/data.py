@@ -25,7 +25,7 @@ class Data(object):
 
 	@property
 	def user_list(self):
-		return [Data.SMALL_MOCK_INPUT]
+		# return [Data.SMALL_MOCK_INPUT]
 		try:
 			data_path = "/root/app/data/Data.json"
 			data      = open(data_path,"r")
