@@ -50,9 +50,10 @@ class Engine(object):
 				assert type(follower) is dict    , "follower should be an dict."
 
 				log = 	{
-							       "type" : "unfollow",
-							   "username" : follower["username"],
-							"insert_date" : arrow.utcnow().datetime
+							        "type" : "unfollow",
+							    "username" : follower["username"],
+							 "insert_date" : arrow.utcnow().datetime,
+							"display_name" : follower["display_name"]
 						}
 
 
@@ -84,9 +85,10 @@ class Engine(object):
 				assert type(follower) is dict    , "follower should be an dict."
 
 				log      = {
-								       "type" : "follow",
-								   "username" : follower["username"],
-								"insert_date" : arrow.utcnow().datetime
+								        "type" : "follow",
+								    "username" : follower["username"],
+								 "insert_date" : arrow.utcnow().datetime,
+								"display_name" : follower["display_name"]
 						   }
 
 				# check if any duplicate data on followers
