@@ -98,6 +98,7 @@ class Engine(object):
 						{"$push":{"followers":follower, "logs":log}}
 					)                
 				#end if
+				success = True
 			except AssertionError:
 				print("[igfollowers] Assertion is not satisfied.")
 				success = True
