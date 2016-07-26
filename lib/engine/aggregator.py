@@ -1,5 +1,6 @@
-from pymongo import MongoClient
-from ..      import tools
+from pymongo  import MongoClient
+from ..       import tools
+from ..logger import Logger
 import pymongo
 import copy
 
@@ -7,6 +8,9 @@ class Engine(object):
 	def __init__(self):
 		""" This function will create a fresh users collection in the database
 		"""
+		self.logger          = Logger()
+		self.logger.app_name = "user_aggregation"
+
 		self.db = MongoClient("mongodb://220.100.163.132:27017/test")
 		self.db = self.db.ig
 		self.db.users.drop()
@@ -18,19 +22,20 @@ class Engine(object):
 		"""
 		assert self.db is not None, "db is not defined"
 		
+		self.logger.write("Fetching Instragram data...")
 		tools._force_create_index(db=self.db, collection="users", field="username")
-		data = self.db.data.find().batch_size(100)
+		data = self.db.data.find({},{"username":1,"followers":1}).batch_size(100)
+
 		for datum in data:
-			print("[user_aggregation][{}] Processing...".format(datum["username"]))
+			self.logger.write("[{}] Processing...".format(datum["username"]))
 
 			followers          = copy.deepcopy(datum["followers"])
 			total_followers    = len(followers)
 
 			del datum["followers"]
-			del datum["logs"]
 			following_document = copy.deepcopy(datum)
 
-			print("[user_aggregation][{}] Number of followers: {}".format(datum["username"], total_followers))
+			self.logger.write("[{}] Number of followers: {}".format(datum["username"], total_followers))
 			for user in followers:
 				try:
 					user.update({"following":[]})
@@ -48,4 +53,5 @@ class Engine(object):
 						{"username":user["username"]},
 						{"$push":{"following":following_document}}
 					)
+			self.logger.write("[{}] Processed...".format(datum["username"]))
 	#end def
