@@ -26,28 +26,38 @@ class Instagram(object):
 		self.driver.quit()
 
 	def login(self):
-		assert self.username is not None, "username is not defined."
-		assert self.password is not None, "password is not defined."
+		try:
+			assert self.username is not None, "username is not defined."
+			assert self.password is not None, "password is not defined."
 
-		print("[igfollowers] Login-ing")
+			print("[igfollowers] Login-ing")
 
-		self.driver.get("https://instagram.com")
+			self.driver.get("https://instagram.com")
 
-		self.wait.until(lambda driver:driver.find_element_by_xpath('//*[@id="react-root"]/section/main/article/div[2]/div[2]/p/a'))	
-		btn_login = self.driver.find_element_by_xpath('//*[@id="react-root"]/section/main/article/div[2]/div[2]/p/a')
-		btn_login.click()
+			self.wait.until(lambda driver:driver.find_element_by_xpath('//*[@id="react-root"]/section/main/article/div[2]/div[2]/p/a'))	
+			btn_login = self.driver.find_element_by_xpath('//*[@id="react-root"]/section/main/article/div[2]/div[2]/p/a')
+			btn_login.click()
 
-		self.wait.until(lambda driver:driver.find_element_by_xpath("//input[@aria-label='Username']"))
-		txt_username = self.driver.find_element_by_xpath("//input[@aria-label='Username']")
-		txt_password = self.driver.find_element_by_xpath("//input[@aria-label='Password']")
-		btn_login    = self.driver.find_element_by_xpath('//*[@id="react-root"]/section/main/article/div[2]/div[1]/div/form/span/button')
+			self.wait.until(lambda driver:driver.find_element_by_xpath("//input[@aria-label='Username']"))
+			txt_username = self.driver.find_element_by_xpath("//input[@aria-label='Username']")
+			txt_password = self.driver.find_element_by_xpath("//input[@aria-label='Password']")
+			btn_login    = self.driver.find_element_by_xpath('//*[@id="react-root"]/section/main/article/div[2]/div[1]/div/form/span/button')
 
-		txt_username.send_keys(self.username)
-		txt_password.send_keys(self.password)
-		btn_login.click()
+			txt_username.send_keys(self.username)
+			txt_password.send_keys(self.password)
+			btn_login.click()
 
-		self.wait.until(lambda driver:driver.find_element_by_xpath('//*[@id="react-root"]/section/nav/div/div/div/div[1]/div'))
-		self.logged_in = True
+			try:
+				self.wait.until(lambda driver:driver.find_element_by_xpath('//*[@id="react-root"]/section/nav/div/div/div/div[1]/div'))
+				self.logged_in = True
+			except selenium.common.exceptions.TimeoutException:
+				# TODO: Check if you need to try logged in or inform that the user got blocked
+				# This is because the user cannot login, should we try it again?
+				raise
+		except AssertionError:
+			raise
+		except:
+			raise
 
 	def goto_user(self,username=None):
 		assert username is not None, "username is not defined."

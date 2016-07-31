@@ -1,6 +1,7 @@
 test.py
 *.log
 *.xlsx
+log/
 # Created by https://www.gitignore.io/api/python
 
 ### Python ###
