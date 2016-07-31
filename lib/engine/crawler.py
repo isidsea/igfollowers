@@ -1,6 +1,7 @@
 from pymongo          import MongoClient
 from ..instagram.user import User
 from ..               import tools
+from ..logger		  import Logger
 import arrow
 import pymongo
 
@@ -12,6 +13,9 @@ class Engine(object):
 		assert "userName"    in user    , "userName is not defined."
 		assert "displayName" in user    , "displayName is not defined."
 		
+		self.logger 		 = Logger()
+		self.logger.app_name = "igfollowers"
+
 		# Connecting to database
 		self._connect()
 
@@ -29,7 +33,7 @@ class Engine(object):
 		except pymongo.errors.DuplicateKeyError:
 			pass
 
-		print("[igfollowers] Indexing...")
+		self.logger.write("Indexing...")		
 		tools._force_create_index(
 			        db = self.db,
 			collection = "data",
@@ -37,7 +41,7 @@ class Engine(object):
 		)
 
 	def _connect(self):
-		print("[igfollowers] Connecting to database...")
+		self.logger.write("Connecting to database...")		
 		self.db = MongoClient("mongodb://mongo:27017")
 		self.db = self.db.ig
 
@@ -67,7 +71,7 @@ class Engine(object):
 				success = True
 			except AssertionError:
 				# Force exit looping even if the assertion is not satisfied.
-				print("[igfollowers] Assertion is not satisfied.")
+				self.logger.error("Assertion is not satisfied.")				
 				success = True
 			except pymongo.errors.AutoReconnect:
 				self._connect()
@@ -102,7 +106,7 @@ class Engine(object):
 				#end if
 				success = True
 			except AssertionError:
-				print("[igfollowers] Assertion is not satisfied.")
+				self.logger.error("Assertion is not satisfied.")				
 				success = True
 			except pymongo.errors.AutoReconnect:
 				self._connect()
@@ -113,7 +117,7 @@ class Engine(object):
 		assert username is not None, "username is not defined."
 		assert self.db  is not None, "db is not defined."
 
-		print("[igfollowers] Getting users from database...")
+		self.logger.debug("Getting users from database...")		
 		result         = [document for document in self.db.data.find({"username":username})]
 		result         = result[0] # TODO: check if result is less than 0
 		user           = User(username=username)

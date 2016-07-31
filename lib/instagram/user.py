@@ -1,4 +1,4 @@
-from tqdm import tqdm
+from ..logger import Logger
 import time
 import random
 import selenium
@@ -8,10 +8,12 @@ class User(object):
 	def __init__(self,username=None, session=None):
 		assert username      is not None, "username is not defined."
 
-		self.session    = session
-		self.username   = username
-		self.crawl      = True
-		self._followers = []
+		self.logger     	 = Logger()
+		self.logger.app_name = "igfollowers"
+		self.session    	 = session
+		self.username  	 	 = username
+		self.crawl      	 = True
+		self._followers 	 = []
 
 	@property
 	def followers(self):
@@ -32,8 +34,8 @@ class User(object):
 		btn_show_followers = driver.find_element_by_xpath('//*[@id="react-root"]/section/main/article/header/div[2]/ul/li[2]/a')
 		btn_show_followers.click()
 
-		wait.until(lambda driver:driver.find_element_by_xpath('/html/body/div[2]/div/div[2]/div/div[2]/ul/li[2]'))	
-		print("[igfollowers][{}] Scrolling...".format(self.username))
+		wait.until(lambda driver:driver.find_element_by_xpath('/html/body/div[2]/div/div[2]/div/div[2]/ul/li[2]'))			
+		self.logger.debug("[{}] Scrolling...".format(self.username))
 		
 		dialog      = driver.find_elements_by_class_name('_4gt3b')[0]		
 		prev_height = -1
@@ -54,11 +56,10 @@ class User(object):
 				else:
 					max_exceed  = False
 					prev_height = int(dialog.get_attribute("scrollHeight"))		
-		users     = driver.find_elements_by_class_name("_cx1ua")
-		users     = tqdm(users)
+		users     = driver.find_elements_by_class_name("_cx1ua")		
 		documents = list()
-		for user in users:
-			users.set_description("[igfollowers][{}] Fetching user data...".format(self.username))
+		self.logger.debug("[{}] Fetching user data...".format(self.username))
+		for user in users:			
 			username     = user.find_element_by_class_name("_4zhc5")
 			username     = username.text
 			user_link    = user.find_element_by_class_name("_4zhc5")

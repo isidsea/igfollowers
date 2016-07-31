@@ -7,7 +7,7 @@ import time
 import random
 
 if __name__ == "__main__":
-    logger = Logger()
+    logger          = Logger()
     logger.app_name = "igfollowers"
 
     instagram          = Instagram()

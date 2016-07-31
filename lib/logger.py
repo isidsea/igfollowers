@@ -27,12 +27,10 @@ class Logger(object):
 	def __init__(self):
 		self.engine   = FileEngine()
 		self.app_name = None
-
-	def write(self,text=None, app_name=None, level="DEBUG", save_engine=None):
-		assert text          is not None, "text is not defined."
-		assert self.app_name is not None, "app_name is not defined."
-
-		app_name = app_name if app_name is not None else self.app_name
+	
+	def _generate_document(self, app_name=None, level=None, text=None):
+		assert text     is not None, "text is not defined."
+		assert app_name is not None, "app_name is not defined."
 
 		current_date = arrow.utcnow().datetime
 		document = {
@@ -41,6 +39,43 @@ class Logger(object):
 			       "level" : level,
 			        "text" : text
 		}
+		return document
 
+	def error(self, text=None, app_name=None, level="ERROR", save_engine=None):
+		assert text          is not None, "text is not defined."
+		assert self.app_name is not None, "app_name is not defined."
+
+		app_name = app_name if app_name is not None else self.app_name
+		document = self._generate_document(
+			app_name = self.app,
+			   level = level,
+			    text = text
+		)
+		if save_engine is None: 
+			self.engine.save(app_name, document)
+
+	def debug(self,text=None, app_name=None, level="DEBUG", save_engine=None):
+		assert text          is not None, "text is not defined."
+		assert self.app_name is not None, "app_name is not defined."
+
+		app_name = app_name if app_name is not None else self.app_name
+		document = self._generate_document(
+			app_name = self.app,
+			   level = level,
+			    text = text
+		)
+		if save_engine is None: 
+			self.engine.save(app_name, document)
+
+	def write(self,text=None, app_name=None, level="DEBUG", save_engine=None):
+		assert text          is not None, "text is not defined."
+		assert self.app_name is not None, "app_name is not defined."
+
+		app_name = app_name if app_name is not None else self.app_name
+		document = self._generate_document(
+			app_name = self.app,
+			   level = level,
+			    text = text
+		)
 		if save_engine is None: 
 			self.engine.save(app_name, document)

@@ -2,9 +2,13 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.support.ui                  import WebDriverWait
 from selenium                                       import webdriver
 from .user                                          import User
+from ..logger										import Logger
 
 class Instagram(object):
 	def __init__(self):
+		self.logger 		 = Logger()
+		self.logger.app_name = "igfollowers"
+
 		cap                                               = DesiredCapabilities.PHANTOMJS.copy()
 		cap["phantomjs.page.settings.userAgent"]          = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1"
 		cap["phantomjs.page.settings.loadImages"]         = False
@@ -29,9 +33,8 @@ class Instagram(object):
 		try:
 			assert self.username is not None, "username is not defined."
 			assert self.password is not None, "password is not defined."
-
-			print("[igfollowers] Login-ing")
-
+			
+			self.logger.debug("Login-ing")
 			self.driver.get("https://instagram.com")
 
 			self.wait.until(lambda driver:driver.find_element_by_xpath('//*[@id="react-root"]/section/main/article/div[2]/div[2]/p/a'))	
@@ -62,8 +65,8 @@ class Instagram(object):
 	def goto_user(self,username=None):
 		assert username is not None, "username is not defined."
 		assert username            , "username cannot be empty."
-		
-		print("[igfollowers] Go to {}".format(username))
+				
+		self.logger.debug("Go to {}".format(username))
 		url = "https://www.instagram.com/{}/".format(username)
 		self.driver.get(url)
 
