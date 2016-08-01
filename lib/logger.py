@@ -47,7 +47,7 @@ class Logger(object):
 
 		app_name = app_name if app_name is not None else self.app_name
 		document = self._generate_document(
-			app_name = self.app,
+			app_name = app_name,
 			   level = level,
 			    text = text
 		)
@@ -60,7 +60,7 @@ class Logger(object):
 
 		app_name = app_name if app_name is not None else self.app_name
 		document = self._generate_document(
-			app_name = self.app,
+			app_name = app_name,
 			   level = level,
 			    text = text
 		)
@@ -73,7 +73,7 @@ class Logger(object):
 
 		app_name = app_name if app_name is not None else self.app_name
 		document = self._generate_document(
-			app_name = self.app,
+			app_name = app_name,
 			   level = level,
 			    text = text
 		)
