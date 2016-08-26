@@ -1,4 +1,5 @@
-import json
+import bson
+import pymongo
 
 class Data(object):
 	SMALL_MOCK_INPUT = {
@@ -23,13 +24,17 @@ class Data(object):
 		      "userName": "toyotamotorphilippines"
 	}
 
+	def connect_to_database(self):
+		db = pymongo.MongoClient("mongodb://220.100.163.132:27017/ig")
+		db = db["ig"]
+		return db
+
 	@property
 	def user_list(self):
 		# return [Data.SMALL_MOCK_INPUT]
 		try:
-			data_path = "/root/app/data/Data.json"
-			data      = open(data_path,"r")
-			data      = json.load(data)
+			db   = self.connect_to_database()
+			data = [doc for doc in db.crawlingList.find()]			
 			return data
 		except FileNotFoundError:
 			return []
