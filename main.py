@@ -30,11 +30,11 @@ if __name__ == "__main__":
       logger.write("[{}] Saving user data...".format(datum["userName"]))
       for follower in new_followers:
         engine.save(follower)
-      logger.write("[{}] Saved...")
+      logger.write("[{}] Saved...".format(datum["userName"]))
 
       logger.write("[{}] Deleting user data...".format(datum["userName"]))
       for follower in unfollow_users:
         engine.delete(follower)
-      logger.write("[{}] Deleted...")
+      logger.write("[{}] Deleted...".format(datum["userName"]))
 
     instagram.quit()

@@ -34,7 +34,7 @@ class Data(object):
 		# return [Data.SMALL_MOCK_INPUT]
 		try:
 			db   = self.connect_to_database()
-			data = [doc for doc in db.crawlingList.find()]			
+			data = [doc for doc in db.crawlingList.find({"is_active":True})]			
 			return data
 		except FileNotFoundError:
 			return []
