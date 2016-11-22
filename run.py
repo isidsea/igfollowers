@@ -18,6 +18,7 @@ if __name__ == "__main__":
 
 	for account in crawling_list.accounts:
 		try:
+			print("[igfollowers][debug] Crawling: %s" % account.username)
 			engine.crawl(account.username)
 		except TooManyDuplicate as ex:
 			pass

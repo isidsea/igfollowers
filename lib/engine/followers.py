@@ -4,6 +4,7 @@ from ..factory.extractor import ExtractorFactory
 from ..factory.finder    import FinderFactory
 from ..factory.saver 	 import SaverFactory
 from ..exceptions        import CannotFindElements, CannotLogin, DuplicateFollower, TooManyDuplicate
+import copy
 
 class FollowersEngine:
 	def __init__(self):
@@ -93,17 +94,20 @@ class FollowersEngine:
 		total_followers = total_followers.replace(",","")
 		total_followers = int(total_followers)
 
-		current_count_of_followers = 0
-		total_duplicate            = 0
-		while current_count_of_followers < total_followers:
+		start_index     = 0
+		end_index       = 10
+		total_duplicate = 0
+		while end_index < total_followers:
 			# I do not know how it works, magically it scrolls!!
+			if end_index >= total_followers:
+				end_index = total_followers
 			users_elements = extractor.extract(
 				browser = self.browser,
 				xpath = '/html/body/div[2]/div/div[2]/div/div[2]/ul/li',
-				wait = '/html/body/div[2]/div/div[2]/div/div[2]/ul/li[%s]' % (current_count_of_followers + 10)
+				wait = '/html/body/div[2]/div/div[2]/div/div[2]/ul/li[%s]' % end_index
 			)
 					
-			for element in users_elements[current_count_of_followers:current_count_of_followers+10]:
+			for element in users_elements[start_index:end_index]:
 				try:
 					user 			  = User()
 					user.username 	  = element.find_element_by_class_name("_4zhc5").text
@@ -116,5 +120,6 @@ class FollowersEngine:
 					total_duplicate += 1
 				if total_duplicate >= 5:
 					raise TooManyDuplicate("Threshold is %s. Too many duplicate follower!" % total_duplicate)
-			current_count_of_followers += 10
+			start_index = copy.copy(end_index)
+			end_index   = end_index + 10
 
