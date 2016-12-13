@@ -13,6 +13,7 @@ IGFollowers is an Instagram crawler to get followers based on account. You just 
 Before you try to run the application, you need to specify config files inside `/config/*.cfg` folder.
 
  - account.cfg: You personal account. This account act as crawler
+ - database.cfg: Contains follower and account list database. This database only support MongoDB
 
 #### account.cfg
 ```ini
@@ -20,7 +21,18 @@ Before you try to run the application, you need to specify config files inside `
 username = xxx
 password = xxx
 ```
-username and password are string.
+#### database.cfg
+```ini
+[follower]
+connectionString = [MongoDB Connection String]
+database = xxx
+collection = xxx
+
+[crawling_list]
+connectionString = [MongoDB Connection String]
+database = xxx
+collection = xxx
+```
 
 ### Installation
 Please make sure you have all configuration set. If you don't you can follow this installation setup below. 
