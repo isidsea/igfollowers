@@ -2,6 +2,8 @@ from ..exceptions import DuplicateFollower
 import pymongo
 import arrow
 import re
+import profig
+import os
 
 class FollowerSaver:
 	def __init__(self, **kwargs):
@@ -22,15 +24,21 @@ class FollowerSaver:
 			"logsdisplay_name": "test"
 		}
 
-		conn = pymongo.MongoClient("mongodb://mongo:27017/ig")
-		db   = conn["ig"]
+		config = profig.Config(os.path.join(os.getcwd(), "config", "database.cfg"))
+		config.init("follower.connectionString", "mongodb://mongo:27017/ig", str)
+		config.init("follower.database", "ig", str)
+		config.init("follower.collection", "data", str)
+		config.sync()
 
-		db.data.create_index("followers.username", background=True)
+		conn = pymongo.MongoClient(config["follower.connectionString"])
+		db   = conn[config["follower.database"]]
+
+		db[config["follower.collection"]].create_index("followers.username", background=True)
 		docs = db.data.find({"followers.username": re.compile(follower["username"], re.IGNORECASE)})
 
 		if docs.count() == 0:
 			follower.update({"_insert_time": arrow.utcnow().datetime})
-			db.data.update(
+			db[config["follower.collection"]].update(
 				{"username": re.compile(account["username"], re.IGNORECASE)}, 
 				{"$set":account, "$push":{
 					"followers": follower

@@ -5,6 +5,8 @@ from ..factory.finder    import FinderFactory
 from ..factory.saver 	 import SaverFactory
 from ..exceptions        import CannotFindElements, CannotLogin, DuplicateFollower, TooManyDuplicate
 import copy
+import os
+import selenium
 
 class FollowersEngine:
 	def __init__(self):
@@ -18,9 +20,12 @@ class FollowersEngine:
 		"""
 		assert username is not None, "username is not defined."
 		assert password is not None, "password is not defined."
+		assert username            , "username is not defined."
+		assert password            , "password is not defined."
 
 		self.browser.get("https://instagram.com")
 		extractor = ExtractorFactory.get_extractor(ExtractorFactory.XPATH)
+		self.browser.driver.save_screenshot(os.path.join(os.getcwd(), "screenshot", "before_login.jpg"))
 
 		btn_show_login = extractor.extract(
 			browser = self.browser, 
@@ -57,7 +62,7 @@ class FollowersEngine:
 				wait = '//*[@id="react-root"]/section/nav/div/div/div/div[1]/div/a'
 			)
 		except CannotFindElements:
-			self.browser.driver.save_screenshot("login_error.png")
+			self.browser.driver.save_screenshot(os.path.join(os.getcwd(), "screenshot", "login_error.png"))
 			raise CannotLogin("Possibly because of wrong username or password. If username and password is correct, you need to see this screenshot first.")
 
 	def crawl(self, username=None):
@@ -70,10 +75,10 @@ class FollowersEngine:
 		assert username is not None, "username is not defined."
 
 		finder    = FinderFactory.get_finder(FinderFactory.CRAWLING_LIST)
-		oa_detail = finder.find(username)
+		oa_detail = finder.find(username) #oa_detail stands for Official Account Detail
 
-		saver 		  = SaverFactory.get_saver(SaverFactory.FOLLOWER)
-		saver.account = oa_detail
+		saver         = SaverFactory.get_saver(SaverFactory.FOLLOWER)
+		saver.account = copy.deepcopy(oa_detail)
 
 		self.browser.get("https://instagram.com/%s" % username)
 
@@ -118,6 +123,8 @@ class FollowersEngine:
 					print("[FollowerSaver][%s] Inserted one follower!" % oa_detail["userName"])
 				except DuplicateFollower as ex:
 					total_duplicate += 1
+				except selenium.common.exceptions.StaleElementReferenceException:
+					print("Stale")
 				if total_duplicate >= 5:
 					raise TooManyDuplicate("Threshold is %s. Too many duplicate follower!" % total_duplicate)
 			start_index = copy.copy(end_index)

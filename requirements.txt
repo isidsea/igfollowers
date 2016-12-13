@@ -1,0 +1,9 @@
+arrow==0.10.0
+click==6.6
+contextlib2==0.5.4
+profig==0.4.1
+pymongo==3.4.0
+python-dateutil==2.6.0
+raven==5.32.0
+selenium==3.0.2
+six==1.10.0
