@@ -1,6 +1,7 @@
 from .user import User 
 import pymongo
 import profig
+import os
 
 class CrawlingList:
 	def __init__(self):
