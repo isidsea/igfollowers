@@ -64,6 +64,7 @@ Input data are stored inside the collection specified in `crawling_list` config.
 
 ### Output
 Out data are stored inside the collection specified in `follower` config
+
 | Key                       | Types    | Desc                                       |
 |---------------------------|----------|--------------------------------------------|
 | _id                       | ObjectId |                                            |
